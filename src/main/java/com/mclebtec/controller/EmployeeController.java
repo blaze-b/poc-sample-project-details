@@ -15,7 +15,6 @@ import java.util.List;
 @RestController
 @RequestMapping(value = "v1/employee")
 @Validated
-
 public class EmployeeController {
 
     private final EmployeeService employeeService;
