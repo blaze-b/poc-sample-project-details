@@ -1,5 +1,6 @@
 package com.mclebtec.components;
 
+import com.mclebtec.dto.records.LeniMongoTemplate;
 import com.mclebtec.handler.ValidationErrors;
 import com.mclebtec.handler.exception.GenericException;
 import com.mongodb.client.MongoClient;
@@ -23,7 +24,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Component
-public class Mongo {
+public class MongoDB {
 
     private static final Long SOCKET_TIME_OUT = 119000L;
 
@@ -31,7 +32,9 @@ public class Mongo {
 
     private final MongoClient mongoClient;
 
-    public Mongo(MongoClient mongoClient) {this.mongoClient = mongoClient;}
+    public MongoDB(MongoClient mongoClient) {
+        this.mongoClient = mongoClient;
+    }
 
     public MongoTemplate getTemplate(String domainName) {
         try {
@@ -45,7 +48,8 @@ public class Mongo {
             }
             return this.getMongoTemplate(domainName).mongoTemplate();
         } catch (Exception e) {
-            throw new GenericException(ValidationErrors.MONGO_CONNECTIVITY_ISSUE, e.getLocalizedMessage(), e.getCause());
+            throw new GenericException(ValidationErrors.MONGO_CONNECTIVITY_ISSUE, e.getLocalizedMessage(),
+                    e.getCause());
         }
     }
 
@@ -55,9 +59,9 @@ public class Mongo {
         final DbRefResolver dbRefResolver = new DefaultDbRefResolver(databaseFactory);
         final MongoMappingContext mappingContext = new MongoMappingContext();
         mappingContext.setAutoIndexCreation(true);
-        final MappingMongoConverter mongoConverter = new MappingMongoConverter(dbRefResolver, mappingContext);
+        MappingMongoConverter mongoConverter = new MappingMongoConverter(dbRefResolver, mappingContext);
         mongoConverter.setMapKeyDotReplacement(".");
-        mongoConverter.setCustomConversions(customConversionsT());
+        mongoConverter.setCustomConversions(customTimeConversions());
         mongoConverter.setTypeMapper(new DefaultMongoTypeMapper(null));
         mongoConverter.afterPropertiesSet();
         LeniMongoTemplate leniMongoTemplate = new LeniMongoTemplate(new MongoTemplate(databaseFactory, mongoConverter),
@@ -66,7 +70,7 @@ public class Mongo {
         return leniMongoTemplate;
     }
 
-    public MongoCustomConversions customConversionsT() {
+    public MongoCustomConversions customTimeConversions() {
         List<Converter<?, ?>> converters = new ArrayList<>();
         converters.add(DateToZonedDateTimeConverter.INSTANCE);
         converters.add(ZonedDateTimeToDateConverter.INSTANCE);
@@ -92,10 +96,5 @@ public class Mongo {
             return LocalDateTime.ofInstant(source.toInstant(), ZoneId.systemDefault());
         }
     }
-
-    record LeniMongoTemplate(MongoTemplate mongoTemplate, long socketTime) {
-
-    }
-
 
 }

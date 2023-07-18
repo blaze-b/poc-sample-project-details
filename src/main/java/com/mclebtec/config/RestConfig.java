@@ -40,8 +40,9 @@ public class RestConfig {
     }
 
     @Bean
-    public EmployeeAuditUtil employeeAuditUtil(Connect connect, Connectors connectors) {
-        return new EmployeeAuditUtil(connect, connectors);
+    public EmployeeAuditUtil employeeAuditUtil(Connect connect, Connectors connectors,
+                                               ObjectMapper objectMapperForRest) {
+        return new EmployeeAuditUtil(connect, connectors, objectMapperForRest);
     }
 
 }

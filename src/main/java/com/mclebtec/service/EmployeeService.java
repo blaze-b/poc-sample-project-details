@@ -1,21 +1,21 @@
 package com.mclebtec.service;
 
-import com.mclebtec.dto.EmployeeDto;
+import com.mclebtec.dto.EmployeeDetails;
 import com.mclebtec.model.Employee;
 import com.mclebtec.repository.EmployeeRepository;
+import com.mclebtec.service.converter.EmployeeConverter;
 import com.mclebtec.util.EmployeeAuditUtil;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
-import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
 public interface EmployeeService {
-    List<EmployeeDto> fetchAllEmployeeDetails();
 
-    EmployeeDto createEmployeeDetail(EmployeeDto employeeDto);
+    List<EmployeeDetails> fetchAllEmployeeDetails();
+
+    EmployeeDetails createEmployeeDetail(EmployeeDetails employeeDetails);
 
 }
 
@@ -23,8 +23,8 @@ public interface EmployeeService {
 @Service
 class EmployeeServiceImpl implements EmployeeService {
 
+    private static final String EMPLOYEE_SERVICE = "_employee_service";
     private final EmployeeRepository employeeRepository;
-
     private final EmployeeAuditUtil employeeAuditUtil;
 
     public EmployeeServiceImpl(EmployeeRepository employeeRepository,
@@ -34,34 +34,22 @@ class EmployeeServiceImpl implements EmployeeService {
     }
 
     @Override
-    public List<EmployeeDto> fetchAllEmployeeDetails() {
+    public List<EmployeeDetails> fetchAllEmployeeDetails() {
         log.info("fetchAllEmployeeDetails::entering....");
-        List<Employee> employeeDetails = employeeRepository.getAllEmployeeDetails("_employee_service");
-        return employeeDetails.stream().map(employee -> {
-            EmployeeDto employeeDto = new EmployeeDto();
-            BeanUtils.copyProperties(employee, employeeDto);
-            employeeDto.setEmployeeId(employee.getEmployeeId().toString());
-            return employeeDto;
-        }).collect(Collectors.toList());
+        List<Employee> employeeDetails = employeeRepository.getAllEmployeeDetails(EMPLOYEE_SERVICE);
+        return employeeDetails.stream().map(EmployeeConverter::setEmployeeDetailsForView)
+                .collect(Collectors.toList());
     }
 
+
     @Override
-    public EmployeeDto createEmployeeDetail(EmployeeDto employeeDto) {
+    public EmployeeDetails createEmployeeDetail(EmployeeDetails employeeDetails) {
         log.info("createEmployee::entering....");
-        Employee employee = new Employee();
-        employee.setEmail(employeeDto.getEmail());
-        employee.setFirstName(employeeDto.getFirstName());
-        employee.setLastName(employeeDto.getLastName());
-        employee.setGender(employeeDto.getGender());
-        employee.setCompany(employeeDto.getCompany());
-        employee.setDateOfBirth(employeeDto.getDateOfBirth());
-        employee.setCreatedDate(new Date());
-        employee.setRole(employeeDto.getRole());
+        Employee employee = EmployeeConverter.setEmployeeDetailsToDao(employeeDetails);
         log.info("createEmployee::employee-details-before-saving::{}", employee);
-        employee = employeeRepository.save("_employee_service", employee);
-        employeeDto = new EmployeeDto();
-        employeeDto.setEmployeeId(employee.getEmployeeId().toString());
-        return employeeDto;
+        employee = employeeRepository.save(EMPLOYEE_SERVICE, employee);
+        return EmployeeConverter.setEmployeeIdDetails(employee);
     }
+
 }
 

@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component;
 @Getter
 public class Connectors {
 
-    @Value("${employee_audit_url:}")
+    @Value("${employee_audit_url:null}")
     private String employeeAuditService;
 
     @PostConstruct

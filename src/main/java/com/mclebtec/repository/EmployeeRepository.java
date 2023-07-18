@@ -1,6 +1,6 @@
 package com.mclebtec.repository;
 
-import com.mclebtec.components.Mongo;
+import com.mclebtec.components.MongoDB;
 import com.mclebtec.handler.ValidationErrors;
 import com.mclebtec.handler.exception.GenericException;
 import com.mclebtec.model.Employee;
@@ -24,23 +24,23 @@ public interface EmployeeRepository {
 @Slf4j
 @Repository
 class EmployeeRepositoryImpl implements EmployeeRepository {
-    private final Mongo mongo;
+    private final MongoDB mongoDB;
 
-    public EmployeeRepositoryImpl(Mongo mongo) {this.mongo = mongo;}
+    public EmployeeRepositoryImpl(MongoDB mongoDB) {this.mongoDB = mongoDB;}
 
     @Override
     public List<Employee> getAllEmployeeDetails(String database) {
-        return this.mongo.getTemplate(database).findAll(Employee.class);
+        return this.mongoDB.getTemplate(database).findAll(Employee.class);
     }
 
     @Override
     public Employee save(String database, Employee employee) {
-        final MongoTemplate template = this.mongo.getTemplate(database);
+        final MongoTemplate template = this.mongoDB.getTemplate(database);
         Query query = new Query();
         Criteria criteria = Criteria.where(Employee.EMP_EMAIL).is(employee.getEmail());
         query.addCriteria(criteria);
         if (Objects.nonNull(template.findOne(query, Employee.class)))
-            throw new GenericException(ValidationErrors   .EMPLOYEE_EMAIL_ALREADY_EXISTS);
+            throw new GenericException(ValidationErrors.EMPLOYEE_EMAIL_ALREADY_EXISTS);
         return template.insert(employee, Employee.DOCUMENT_NAME);
     }
 }

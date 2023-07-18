@@ -7,7 +7,7 @@ import org.springframework.http.HttpStatus;
 
 @Data
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class SuccessDto<T> {
+public class Success<T> {
 
     @JsonProperty(value = "status_code")
     private Integer statusCode;
@@ -16,12 +16,12 @@ public class SuccessDto<T> {
     @JsonProperty(value = "data")
     private T data;
 
-    public SuccessDto() {
+    public Success() {
         this.setStatusCode(HttpStatus.OK.value());
         this.setStatusText(HttpStatus.OK.getReasonPhrase());
     }
 
-    public SuccessDto(HttpStatus status) {
+    public Success(HttpStatus status) {
         this.setStatusCode(status.value());
         this.setStatusText(status.getReasonPhrase());
     }

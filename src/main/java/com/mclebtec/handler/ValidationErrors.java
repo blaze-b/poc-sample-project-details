@@ -16,6 +16,7 @@ public enum ValidationErrors {
     MONGO_CONNECTIVITY_ISSUE("006", "Mongo connectivity failure"),
     EMPLOYEE_EMAIL_ALREADY_EXISTS("007", "Email already exists"),
     CONNECTIVITY_ERROR("008", "Rest Connection Issue"),
+    EMPLOYEE_AUDIT_DETAILS_PARSING_ERROR("009", "Could not parse the employee audit details"),
     ;
 
     private final String errorCode;

@@ -1,7 +1,7 @@
 package com.mclebtec.controller.validator;
 
 
-import com.mclebtec.dto.EmployeeDto;
+import com.mclebtec.dto.EmployeeDetails;
 import com.mclebtec.handler.ValidationErrors;
 import com.mclebtec.handler.exception.GenericException;
 import jakarta.validation.Constraint;
@@ -30,7 +30,7 @@ public @interface ValidEmployee {
 }
 
 @Slf4j
-class EmployeeValidator implements ConstraintValidator<ValidEmployee, EmployeeDto> {
+class EmployeeValidator implements ConstraintValidator<ValidEmployee, EmployeeDetails> {
 
     private static final String EMAIL_REGEX;
 
@@ -41,7 +41,7 @@ class EmployeeValidator implements ConstraintValidator<ValidEmployee, EmployeeDt
     private static final Pattern EMAIL_PATTERN = Pattern.compile(EMAIL_REGEX);
 
     @Override
-    public boolean isValid(EmployeeDto employee, ConstraintValidatorContext context) {
+    public boolean isValid(EmployeeDetails employee, ConstraintValidatorContext context) {
         log.debug("Inside the employee input details validator....");
         if (!StringUtils.hasText(employee.getEmail()))
             throw new GenericException(ValidationErrors.INVALID_EMAIL);

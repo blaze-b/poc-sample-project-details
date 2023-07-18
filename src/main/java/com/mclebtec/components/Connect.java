@@ -20,7 +20,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
@@ -41,12 +40,11 @@ public class Connect {
         this.objectMapperForRest = objectMapperForRest;
     }
 
-    public Map<String, Object> rest(String url, HttpMethod method, String token, Object body) {
+    public String rest(String url, HttpMethod method, String token, Object body) {
         try {
-            log.info("service-connector::method::{}::url-details::{}::body-details::{}::auth-token::{}", method,
+            log.info("rest-connector::method::{}::url-details::{}::body-details::{}::auth-token::{}", method,
                     url, body, token);
-            AtomicReference<Map<String, Object>> finalResponse = new AtomicReference<>(new HashMap<>());
-            final AtomicInteger attempts = new AtomicInteger();
+            AtomicReference<String> finalResponse = new AtomicReference<>("");
             retryTemplate.execute((RetryCallback<Boolean, Exception>) context -> {
                 final HttpHeaders requestHeaders = new HttpHeaders();
                 if (Objects.nonNull(token)) {
@@ -57,16 +55,20 @@ public class Connect {
                 requestHeaders.setContentType(APPLICATION_JSON);
                 requestHeaders.setAccept(Collections.singletonList(APPLICATION_JSON));
                 final HttpEntity<Object> httpEntity =
-                        (Objects.nonNull(body)) ? new HttpEntity<>(body, requestHeaders) : new HttpEntity<>(requestHeaders);
-                log.debug("service-connector::attempt::{}", attempts.incrementAndGet());
-                log.debug("service-connector::start-time::{}", Instant.now().toEpochMilli());
+                        (Objects.nonNull(body)) ? new HttpEntity<>(body, requestHeaders)
+                                : new HttpEntity<>(requestHeaders);
+                log.info("rest-connector::start-time::{}", Instant.now().toEpochMilli());
                 final ResponseEntity<String> response = restTemplate.exchange(url, method, httpEntity, String.class);
-                log.debug("service-connector::end-time::{}", Instant.now().toEpochMilli());
-                log.debug("service-connector::response-details::{}", response);
-                final Map<String, Object> bodyAfterConverting = objectMapperForRest.readValue(response.getBody(),
+                log.info("rest-connector::end-time::{}", Instant.now().toEpochMilli());
+                final Map<String, Object> responseDetails = objectMapperForRest.readValue(response.getBody(),
                         new TypeReference<HashMap<String, Object>>() {
                         });
-                finalResponse.set(bodyAfterConverting);
+                log.debug("initial-response::{}", responseDetails);
+                if (checkStatus(responseDetails)) {
+                    final String data = objectMapperForRest.writeValueAsString(responseDetails.get("data"));
+                    log.debug("success-response::{}", data);
+                    finalResponse.set(data);
+                }
                 return true;
             });
             return finalResponse.get();
@@ -74,6 +76,12 @@ public class Connect {
             throw new GenericException(ValidationErrors.CONNECTIVITY_ERROR, ex.getLocalizedMessage(),
                     ex.getCause());
         }
+    }
+
+    private static boolean checkStatus(Map<String, Object> responseDetails) {
+        return Objects.nonNull(responseDetails)
+                && responseDetails.containsKey("status") && responseDetails.get("status").equals("success")
+                && responseDetails.containsKey("data");
     }
 
 }

@@ -13,7 +13,7 @@ import java.util.Date;
 @Data
 @ValidEmployee
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class EmployeeDto {
+public class EmployeeDetails {
 
     @JsonProperty(value = "employee_id")
     private String employeeId;

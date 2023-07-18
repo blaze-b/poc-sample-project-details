@@ -1,7 +1,7 @@
 package com.mclebtec.controller;
 
-import com.mclebtec.dto.EmployeeDto;
-import com.mclebtec.dto.SuccessDto;
+import com.mclebtec.dto.EmployeeDetails;
+import com.mclebtec.dto.Success;
 import com.mclebtec.service.EmployeeService;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
@@ -26,23 +26,23 @@ public class EmployeeController {
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    public SuccessDto<List<EmployeeDto>> fetchAllEmployeeDetails() {
+    public Success<List<EmployeeDetails>> fetchAllEmployeeDetails() {
         log.info("fetchAllEmployeeDetails::entering.....");
-        SuccessDto<List<EmployeeDto>> successDto = new SuccessDto<>();
-        final List<EmployeeDto> employeeDetails = employeeService.fetchAllEmployeeDetails();
+        Success<List<EmployeeDetails>> success = new Success<>();
+        final List<EmployeeDetails> employeeDetails = employeeService.fetchAllEmployeeDetails();
         log.info("fetchAllEmployeeDetails::employee-details::{}", employeeDetails);
-        successDto.setData(employeeDetails);
-        return successDto;
+        success.setData(employeeDetails);
+        return success;
     }
 
     @PostMapping(value = "create")
     @ResponseStatus(HttpStatus.CREATED)
-    public SuccessDto<EmployeeDto> createEmployeeDetails(@Valid @RequestBody EmployeeDto employeeDto) {
-        log.info("createEmployeeDetails::entering::input::{}", employeeDto);
-        EmployeeDto employDetailsAfterSaving = employeeService.createEmployeeDetail(employeeDto);
-        SuccessDto<EmployeeDto> successDto = new SuccessDto<>(HttpStatus.CREATED);
-        successDto.setData(employDetailsAfterSaving);
-        return successDto;
+    public Success<EmployeeDetails> createEmployeeDetails(@Valid @RequestBody EmployeeDetails employeeDetails) {
+        log.info("createEmployeeDetails::entering::input::{}", employeeDetails);
+        EmployeeDetails employDetailsAfterSaving = employeeService.createEmployeeDetail(employeeDetails);
+        Success<EmployeeDetails> success = new Success<>(HttpStatus.CREATED);
+        success.setData(employDetailsAfterSaving);
+        return success;
     }
 
 }
