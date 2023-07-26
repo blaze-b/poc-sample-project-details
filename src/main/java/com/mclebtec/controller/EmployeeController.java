@@ -38,7 +38,7 @@ public class EmployeeController {
     @ResponseStatus(HttpStatus.CREATED)
     public Success<EmployeeDetails> createEmployeeDetails(@Valid @RequestBody EmployeeDetails employeeDetails) {
         log.info("createEmployeeDetails::entering::input::{}", employeeDetails);
-        EmployeeDetails employDetailsAfterSaving = employeeService.createEmployeeDetail(employeeDetails);
+        final EmployeeDetails employDetailsAfterSaving = employeeService.createEmployeeDetail(employeeDetails);
         Success<EmployeeDetails> success = new Success<>(HttpStatus.CREATED);
         success.setData(employDetailsAfterSaving);
         return success;
