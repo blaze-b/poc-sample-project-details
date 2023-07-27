@@ -15,33 +15,34 @@ import java.util.Objects;
 
 public interface EmployeeRepository {
 
-    List<Employee> getAllEmployeeDetails(String database);
+  List<Employee> getAllEmployeeDetails(String database);
 
-    Employee save(String database, Employee employee);
+  Employee save(String database, Employee employee);
 
 }
+
 
 @Slf4j
 @Repository
 class EmployeeRepositoryImpl implements EmployeeRepository {
-    private final MongoDB mongoDB;
+  private final MongoDB mongoDB;
 
-    public EmployeeRepositoryImpl(MongoDB mongoDB) {this.mongoDB = mongoDB;}
+  public EmployeeRepositoryImpl(MongoDB mongoDB) {this.mongoDB = mongoDB;}
 
-    @Override
-    public List<Employee> getAllEmployeeDetails(String database) {
-        return this.mongoDB.getTemplate(database).findAll(Employee.class);
-    }
+  @Override
+  public List<Employee> getAllEmployeeDetails(String database) {
+    return this.mongoDB.getTemplate(database).findAll(Employee.class);
+  }
 
-    @Override
-    public Employee save(String database, Employee employee) {
-        final MongoTemplate template = this.mongoDB.getTemplate(database);
-        Query query = new Query();
-        Criteria criteria = Criteria.where(Employee.EMP_EMAIL).is(employee.getEmail());
-        query.addCriteria(criteria);
-        if (Objects.nonNull(template.findOne(query, Employee.class)))
-            throw new GenericException(ValidationErrors.EMPLOYEE_EMAIL_ALREADY_EXISTS);
-        return template.insert(employee, Employee.DOCUMENT_NAME);
-    }
+  @Override
+  public Employee save(String database, Employee employee) {
+    final MongoTemplate template = this.mongoDB.getTemplate(database);
+    Query query = new Query();
+    Criteria criteria = Criteria.where(Employee.EMP_EMAIL).is(employee.getEmail());
+    query.addCriteria(criteria);
+    if (Objects.nonNull(template.findOne(query, Employee.class)))
+      throw new GenericException(ValidationErrors.EMPLOYEE_EMAIL_ALREADY_EXISTS);
+    return template.insert(employee, Employee.DOCUMENT_NAME);
+  }
 }
 

@@ -15,22 +15,21 @@ import java.util.List;
 @ActiveProfiles(value = "test")
 public class EmployeeAuditUtilTest {
 
-    @Autowired
-    private EmployeeAuditUtil employeeAuditUtil;
+  @Autowired
+  private EmployeeAuditUtil employeeAuditUtil;
 
-    @BeforeEach
-    public void init() {
+  @BeforeEach
+  public void init() {
 
-    }
+  }
 
-    @Test
-    public void getEmployeeFromOtherCountries_Test() {
+  @Test
+  public void getEmployeeFromOtherCountries_Test() {
 
-        List<EmployeeAuditDetails> employeeAuditDetails = employeeAuditUtil
-                .getEmployeeFromOtherCountries(null);
+    List<EmployeeAuditDetails> employeeAuditDetails = employeeAuditUtil.getEmployeeFromOtherCountries(null);
 
-        Assertions.assertThat(employeeAuditDetails).isNotEmpty();
-    }
+    Assertions.assertThat(employeeAuditDetails).isNotEmpty();
+  }
 
 
 }

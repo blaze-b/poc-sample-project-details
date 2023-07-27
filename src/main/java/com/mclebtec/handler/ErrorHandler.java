@@ -14,24 +14,24 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 @ControllerAdvice
 public class ErrorHandler {
 
-    public static final String ERROR_CODE = "ERROR_CODE";
+  public static final String ERROR_CODE = "ERROR_CODE";
 
-    @ExceptionHandler(GenericException.class)
-    public ResponseEntity<Error<String>> handleGenericException(GenericException exception) {
-        final Error<String> errorDto = new Error<>(HttpStatus.BAD_REQUEST, exception);
-        MDC.put(ERROR_CODE, errorDto.getErrorCode());
-        log.error("\"message\":\"%s\"".formatted(exception.getMessage()), exception.getCause());
-        MDC.remove(ERROR_CODE);
-        return ResponseEntity.badRequest().body(errorDto);
-    }
+  @ExceptionHandler(GenericException.class)
+  public ResponseEntity<Error<String>> handleGenericException(GenericException exception) {
+    final Error<String> errorDto = new Error<>(HttpStatus.BAD_REQUEST, exception);
+    MDC.put(ERROR_CODE, errorDto.getErrorCode());
+    log.error("\"message\":\"%s\"".formatted(exception.getMessage()), exception.getCause());
+    MDC.remove(ERROR_CODE);
+    return ResponseEntity.badRequest().body(errorDto);
+  }
 
-    @ExceptionHandler({HttpMessageNotReadableException.class})
-    public ResponseEntity<Error<String>> handleAllException(Exception exception) {
-        final Error<String> errorDto = new Error<>(HttpStatus.BAD_REQUEST);
-        MDC.put(ERROR_CODE, errorDto.getErrorCode());
-        log.error("\"message\":\"%s\"".formatted(exception.getMessage()), exception.getCause());
-        MDC.remove(ERROR_CODE);
-        return ResponseEntity.badRequest().body(errorDto);
-    }
+  @ExceptionHandler({HttpMessageNotReadableException.class})
+  public ResponseEntity<Error<String>> handleAllException(Exception exception) {
+    final Error<String> errorDto = new Error<>(HttpStatus.BAD_REQUEST);
+    MDC.put(ERROR_CODE, errorDto.getErrorCode());
+    log.error("\"message\":\"%s\"".formatted(exception.getMessage()), exception.getCause());
+    MDC.remove(ERROR_CODE);
+    return ResponseEntity.badRequest().body(errorDto);
+  }
 
 }

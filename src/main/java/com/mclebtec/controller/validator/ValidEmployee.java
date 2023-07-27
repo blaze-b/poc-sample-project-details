@@ -21,44 +21,45 @@ import java.util.regex.Pattern;
 @Target({ElementType.PARAMETER, ElementType.TYPE, ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface ValidEmployee {
-    String message() default "Invalid Employee Details";
+  String message() default "Invalid Employee Details";
 
-    Class<?>[] groups() default {};
+  Class<?>[] groups() default {};
 
-    Class<? extends Payload>[] payload() default {};
+  Class<? extends Payload>[] payload() default {};
 
 }
+
 
 @Slf4j
 class EmployeeValidator implements ConstraintValidator<ValidEmployee, EmployeeDetails> {
 
-    private static final String EMAIL_REGEX;
+  private static final String EMAIL_REGEX;
 
-    static {
-        EMAIL_REGEX = "^\\w+([\\.-]?\\w+)*@\\w+([\\.-]?\\w+)*(\\.\\w{2,3})+$";
-    }
+  static {
+    EMAIL_REGEX = "^\\w+([\\.-]?\\w+)*@\\w+([\\.-]?\\w+)*(\\.\\w{2,3})+$";
+  }
 
-    private static final Pattern EMAIL_PATTERN = Pattern.compile(EMAIL_REGEX);
+  private static final Pattern EMAIL_PATTERN = Pattern.compile(EMAIL_REGEX);
 
-    @Override
-    public boolean isValid(EmployeeDetails employee, ConstraintValidatorContext context) {
-        log.debug("Inside the employee input details validator....");
-        if (!StringUtils.hasText(employee.getEmail()))
-            throw new GenericException(ValidationErrors.INVALID_EMAIL);
-        else if (!isValidEmail(employee.getEmail()))
-            throw new GenericException(ValidationErrors.INVALID_EMAIL_FORMAT);
-        if (!StringUtils.hasText(employee.getFirstName()))
-            throw new GenericException(ValidationErrors.INVALID_FIRST_NAME);
-        if (!StringUtils.hasText(employee.getLastName()))
-            throw new GenericException(ValidationErrors.INVALID_LAST_NAME);
-        if (Objects.isNull(employee.getGender()))
-            throw new GenericException(ValidationErrors.INVALID_GENDER);
-        return true;
-    }
+  @Override
+  public boolean isValid(EmployeeDetails employee, ConstraintValidatorContext context) {
+    log.debug("Inside the employee input details validator....");
+    if (!StringUtils.hasText(employee.getEmail()))
+      throw new GenericException(ValidationErrors.INVALID_EMAIL);
+    else if (!isValidEmail(employee.getEmail()))
+      throw new GenericException(ValidationErrors.INVALID_EMAIL_FORMAT);
+    if (!StringUtils.hasText(employee.getFirstName()))
+      throw new GenericException(ValidationErrors.INVALID_FIRST_NAME);
+    if (!StringUtils.hasText(employee.getLastName()))
+      throw new GenericException(ValidationErrors.INVALID_LAST_NAME);
+    if (Objects.isNull(employee.getGender()))
+      throw new GenericException(ValidationErrors.INVALID_GENDER);
+    return true;
+  }
 
-    public boolean isValidEmail(String email) {
-        Matcher matcher = EMAIL_PATTERN.matcher(email);
-        return matcher.matches();
-    }
+  public boolean isValidEmail(String email) {
+    Matcher matcher = EMAIL_PATTERN.matcher(email);
+    return matcher.matches();
+  }
 }
 

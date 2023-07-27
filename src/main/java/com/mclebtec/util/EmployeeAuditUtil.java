@@ -18,35 +18,35 @@ import java.util.List;
 @Slf4j
 public class EmployeeAuditUtil {
 
-    private final Connect connect;
-    private final Connectors connectors;
-    private final ObjectMapper objectMapperForRest;
+  private final Connect connect;
+  private final Connectors connectors;
+  private final ObjectMapper objectMapperForRest;
 
-    public static final String AUDIT_URL = "/api/v1/employees";
+  public static final String AUDIT_URL = "/api/v1/employees";
 
-    public EmployeeAuditUtil(Connect connect, Connectors connectors, ObjectMapper objectMapperForRest) {
-        this.connect = connect;
-        this.connectors = connectors;
-        this.objectMapperForRest = objectMapperForRest;
+  public EmployeeAuditUtil(Connect connect, Connectors connectors, ObjectMapper objectMapperForRest) {
+    this.connect = connect;
+    this.connectors = connectors;
+    this.objectMapperForRest = objectMapperForRest;
+  }
+
+  public List<EmployeeAuditDetails> getEmployeeFromOtherCountries(String token) {
+    try {
+      final String employee = "%s%s".formatted(connectors.getEmployeeAuditService(), AUDIT_URL);
+      String responseDetails = connect.rest(employee, HttpMethod.GET, token, null);
+      if (StringUtils.hasText(responseDetails)) {
+        List<EmployeeAuditDetails> employeeDetails =
+            objectMapperForRest.readValue(responseDetails, new TypeReference<>() {
+            });
+        log.info("getEmployeeFromOtherCountries::employee-details::{}", employeeDetails);
+        return employeeDetails;
+      }
+      return new ArrayList<>();
+    } catch (JsonProcessingException e) {
+      throw new GenericException(ValidationErrors.EMPLOYEE_AUDIT_DETAILS_PARSING_ERROR, e.getLocalizedMessage(),
+          e.getCause());
     }
-
-    public List<EmployeeAuditDetails> getEmployeeFromOtherCountries(String token) {
-        try {
-            final String employee = "%s%s".formatted(connectors.getEmployeeAuditService(), AUDIT_URL);
-            String responseDetails = connect.rest(employee, HttpMethod.GET, token, null);
-            if (StringUtils.hasText(responseDetails)) {
-                List<EmployeeAuditDetails> employeeDetails = objectMapperForRest.readValue(responseDetails,
-                        new TypeReference<>() {
-                        });
-                log.info("getEmployeeFromOtherCountries::employee-details::{}", employeeDetails);
-                return employeeDetails;
-            }
-            return new ArrayList<>();
-        } catch (JsonProcessingException e) {
-            throw new GenericException(ValidationErrors.EMPLOYEE_AUDIT_DETAILS_PARSING_ERROR, e.getLocalizedMessage(),
-                    e.getCause());
-        }
-    }
+  }
 
 
 }

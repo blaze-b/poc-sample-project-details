@@ -15,26 +15,26 @@ import java.util.Date;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class EmployeeDetails {
 
-    @JsonProperty(value = "employee_id")
-    private String employeeId;
+  @JsonProperty(value = "employee_id")
+  private String employeeId;
 
-    private String email;
+  private String email;
 
-    @JsonProperty(value = "first_name")
-    private String firstName;
+  @JsonProperty(value = "first_name")
+  private String firstName;
 
-    @JsonProperty(value = "last_name")
-    private String lastName;
+  @JsonProperty(value = "last_name")
+  private String lastName;
 
-    @JsonProperty(value = "company")
-    private String company;
+  @JsonProperty(value = "company")
+  private String company;
 
-    @JsonProperty(value = "date_of_birth")
-    @JsonFormat(pattern = "MM/dd/yyyy")
-    private Date dateOfBirth;
+  @JsonProperty(value = "date_of_birth")
+  @JsonFormat(pattern = "MM/dd/yyyy")
+  private Date dateOfBirth;
 
-    private Gender gender;
+  private Gender gender;
 
-    private Role role;
+  private Role role;
 
 }

@@ -17,31 +17,31 @@ import java.util.List;
 @Validated
 public class EmployeeController {
 
-    private final EmployeeService employeeService;
+  private final EmployeeService employeeService;
 
-    public EmployeeController(EmployeeService employeeService) {
-        this.employeeService = employeeService;
-    }
+  public EmployeeController(EmployeeService employeeService) {
+    this.employeeService = employeeService;
+  }
 
-    @GetMapping
-    @ResponseStatus(HttpStatus.OK)
-    public Success<List<EmployeeDetails>> fetchAllEmployeeDetails() {
-        log.info("fetchAllEmployeeDetails::entering.....");
-        Success<List<EmployeeDetails>> success = new Success<>();
-        final List<EmployeeDetails> employeeDetails = employeeService.fetchAllEmployeeDetails();
-        log.info("fetchAllEmployeeDetails::employee-details::{}", employeeDetails);
-        success.setData(employeeDetails);
-        return success;
-    }
+  @GetMapping
+  @ResponseStatus(HttpStatus.OK)
+  public Success<List<EmployeeDetails>> fetchAllEmployeeDetails() {
+    log.info("fetchAllEmployeeDetails::entering.....");
+    Success<List<EmployeeDetails>> success = new Success<>();
+    final List<EmployeeDetails> employeeDetails = employeeService.fetchAllEmployeeDetails();
+    log.info("fetchAllEmployeeDetails::employee-details::{}", employeeDetails);
+    success.setData(employeeDetails);
+    return success;
+  }
 
-    @PostMapping(value = "create")
-    @ResponseStatus(HttpStatus.CREATED)
-    public Success<EmployeeDetails> createEmployeeDetails(@Valid @RequestBody EmployeeDetails employeeDetails) {
-        log.info("createEmployeeDetails::entering::input::{}", employeeDetails);
-        final EmployeeDetails employDetailsAfterSaving = employeeService.createEmployeeDetail(employeeDetails);
-        Success<EmployeeDetails> success = new Success<>(HttpStatus.CREATED);
-        success.setData(employDetailsAfterSaving);
-        return success;
-    }
+  @PostMapping(value = "create")
+  @ResponseStatus(HttpStatus.CREATED)
+  public Success<EmployeeDetails> createEmployeeDetails(@Valid @RequestBody EmployeeDetails employeeDetails) {
+    log.info("createEmployeeDetails::entering::input::{}", employeeDetails);
+    final EmployeeDetails employDetailsAfterSaving = employeeService.createEmployeeDetail(employeeDetails);
+    Success<EmployeeDetails> success = new Success<>(HttpStatus.CREATED);
+    success.setData(employDetailsAfterSaving);
+    return success;
+  }
 
 }

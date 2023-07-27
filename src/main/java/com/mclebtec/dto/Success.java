@@ -9,21 +9,21 @@ import org.springframework.http.HttpStatus;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class Success<T> {
 
-    @JsonProperty(value = "status_code")
-    private Integer statusCode;
-    @JsonProperty(value = "status_txt")
-    private String statusText;
-    @JsonProperty(value = "data")
-    private T data;
+  @JsonProperty(value = "status_code")
+  private Integer statusCode;
+  @JsonProperty(value = "status_txt")
+  private String statusText;
+  @JsonProperty(value = "data")
+  private T data;
 
-    public Success() {
-        this.setStatusCode(HttpStatus.OK.value());
-        this.setStatusText(HttpStatus.OK.getReasonPhrase());
-    }
+  public Success() {
+    this.setStatusCode(HttpStatus.OK.value());
+    this.setStatusText(HttpStatus.OK.getReasonPhrase());
+  }
 
-    public Success(HttpStatus status) {
-        this.setStatusCode(status.value());
-        this.setStatusText(status.getReasonPhrase());
-    }
+  public Success(HttpStatus status) {
+    this.setStatusCode(status.value());
+    this.setStatusText(status.getReasonPhrase());
+  }
 
 }

@@ -13,43 +13,42 @@ import java.util.stream.Collectors;
 
 public interface EmployeeService {
 
-    List<EmployeeDetails> fetchAllEmployeeDetails();
+  List<EmployeeDetails> fetchAllEmployeeDetails();
 
-    EmployeeDetails createEmployeeDetail(EmployeeDetails employeeDetails);
+  EmployeeDetails createEmployeeDetail(EmployeeDetails employeeDetails);
 
 }
+
 
 @Slf4j
 @Service
 class EmployeeServiceImpl implements EmployeeService {
 
-    private static final String EMPLOYEE_SERVICE = "_employee_service";
-    private final EmployeeRepository employeeRepository;
-    private final EmployeeAuditUtil employeeAuditUtil;
+  private static final String EMPLOYEE_SERVICE = "_employee_service";
+  private final EmployeeRepository employeeRepository;
+  private final EmployeeAuditUtil employeeAuditUtil;
 
-    public EmployeeServiceImpl(EmployeeRepository employeeRepository,
-                               EmployeeAuditUtil employeeAuditUtil) {
-        this.employeeRepository = employeeRepository;
-        this.employeeAuditUtil = employeeAuditUtil;
-    }
+  public EmployeeServiceImpl(EmployeeRepository employeeRepository, EmployeeAuditUtil employeeAuditUtil) {
+    this.employeeRepository = employeeRepository;
+    this.employeeAuditUtil = employeeAuditUtil;
+  }
 
-    @Override
-    public List<EmployeeDetails> fetchAllEmployeeDetails() {
-        log.info("fetchAllEmployeeDetails::entering....");
-        List<Employee> employeeDetails = employeeRepository.getAllEmployeeDetails(EMPLOYEE_SERVICE);
-        return employeeDetails.stream().map(EmployeeConverter::setEmployeeDetailsForView)
-                .collect(Collectors.toList());
-    }
+  @Override
+  public List<EmployeeDetails> fetchAllEmployeeDetails() {
+    log.info("fetchAllEmployeeDetails::entering....");
+    List<Employee> employeeDetails = employeeRepository.getAllEmployeeDetails(EMPLOYEE_SERVICE);
+    return employeeDetails.stream().map(EmployeeConverter::setEmployeeDetailsForView).collect(Collectors.toList());
+  }
 
 
-    @Override
-    public EmployeeDetails createEmployeeDetail(EmployeeDetails employeeDetails) {
-        log.info("createEmployee::entering....");
-        Employee employee = EmployeeConverter.setEmployeeDetailsToDao(employeeDetails);
-        log.info("createEmployee::employee-details-before-saving::{}", employee);
-        employee = employeeRepository.save(EMPLOYEE_SERVICE, employee);
-        return EmployeeConverter.setEmployeeIdDetails(employee);
-    }
+  @Override
+  public EmployeeDetails createEmployeeDetail(EmployeeDetails employeeDetails) {
+    log.info("createEmployee::entering....");
+    Employee employee = EmployeeConverter.setEmployeeDetailsToDao(employeeDetails);
+    log.info("createEmployee::employee-details-before-saving::{}", employee);
+    employee = employeeRepository.save(EMPLOYEE_SERVICE, employee);
+    return EmployeeConverter.setEmployeeIdDetails(employee);
+  }
 
 }
 
