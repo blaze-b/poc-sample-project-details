@@ -1,15 +1,18 @@
 package com.mclebtec.components;
 
-import com.mclebtec.dto.records.LeniMongoTemplate;
+import com.mclebtec.dto.records.DbMongoTemplate;
 import com.mclebtec.handler.ValidationErrors;
 import com.mclebtec.handler.exception.GenericException;
 import com.mongodb.client.MongoClient;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.data.convert.ReadingConverter;
 import org.springframework.data.convert.WritingConverter;
-import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.SimpleMongoClientDatabaseFactory;
-import org.springframework.data.mongodb.core.convert.*;
+import org.springframework.data.mongodb.core.convert.DbRefResolver;
+import org.springframework.data.mongodb.core.convert.DefaultDbRefResolver;
+import org.springframework.data.mongodb.core.convert.DefaultMongoTypeMapper;
+import org.springframework.data.mongodb.core.convert.MappingMongoConverter;
+import org.springframework.data.mongodb.core.convert.MongoCustomConversions;
 import org.springframework.data.mongodb.core.mapping.MongoMappingContext;
 import org.springframework.stereotype.Component;
 
@@ -28,7 +31,7 @@ public class MongoDB {
 
   private static final Long SOCKET_TIME_OUT = 119000L;
 
-  private final Map<String, LeniMongoTemplate> mongoTemplatePerDomain = new ConcurrentHashMap<>();
+  private final Map<String, DbMongoTemplate> mongoTemplatePerDomain = new ConcurrentHashMap<>();
 
   private final MongoClient mongoClient;
 
@@ -36,13 +39,13 @@ public class MongoDB {
     this.mongoClient = mongoClient;
   }
 
-  public MongoTemplate getTemplate(String domainName) {
+  public org.springframework.data.mongodb.core.MongoTemplate getTemplate(String domainName) {
     try {
       if (mongoTemplatePerDomain.containsKey(domainName)) {
-        LeniMongoTemplate leniMongoTemplate = mongoTemplatePerDomain.get(domainName);
-        final long diff = Instant.now().toEpochMilli() - (leniMongoTemplate.socketTime() - 10);
+        DbMongoTemplate dbMongoTemplate = mongoTemplatePerDomain.get(domainName);
+        final long diff = Instant.now().toEpochMilli() - (dbMongoTemplate.socketTime() - 10);
         if (diff < SOCKET_TIME_OUT)
-          return leniMongoTemplate.mongoTemplate();
+          return dbMongoTemplate.mongoTemplate();
         else
           mongoTemplatePerDomain.remove(domainName);
       }
@@ -52,7 +55,7 @@ public class MongoDB {
     }
   }
 
-  private LeniMongoTemplate getMongoTemplate(final String dbName) {
+  private DbMongoTemplate getMongoTemplate(final String dbName) {
     final SimpleMongoClientDatabaseFactory databaseFactory = new SimpleMongoClientDatabaseFactory(mongoClient, dbName);
     final DbRefResolver dbRefResolver = new DefaultDbRefResolver(databaseFactory);
     final MongoMappingContext mappingContext = new MongoMappingContext();
@@ -62,10 +65,10 @@ public class MongoDB {
     mongoConverter.setCustomConversions(customTimeConversions());
     mongoConverter.setTypeMapper(new DefaultMongoTypeMapper(null));
     mongoConverter.afterPropertiesSet();
-    LeniMongoTemplate leniMongoTemplate =
-        new LeniMongoTemplate(new MongoTemplate(databaseFactory, mongoConverter), Instant.now().toEpochMilli());
-    mongoTemplatePerDomain.put(dbName, leniMongoTemplate);
-    return leniMongoTemplate;
+    DbMongoTemplate dbMongoTemplate =
+        new DbMongoTemplate(new org.springframework.data.mongodb.core.MongoTemplate(databaseFactory, mongoConverter), Instant.now().toEpochMilli());
+    mongoTemplatePerDomain.put(dbName, dbMongoTemplate);
+    return dbMongoTemplate;
   }
 
   public MongoCustomConversions customTimeConversions() {

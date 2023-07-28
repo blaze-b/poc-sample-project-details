@@ -6,7 +6,7 @@ import lombok.Getter;
 @AllArgsConstructor
 @Getter
 public enum Common {
-  EMPLOYEE_ERROR_CODE("LUM_EMP_ERR_"),
+  EMPLOYEE_ERROR_CODE("EMP_ERR_"),
   BEARER("Bearer "),
   TOKEN("token"),
   AZURE_API_KEY("api-key"),
